@@ -1,0 +1,30 @@
+name: Build AltAppStore IPA
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build and export unsigned IPA
+        run: |
+          xcodebuild -scheme AltAppStore -sdk iphoneos -configuration Release archive \
+            -archivePath $PWD/build/AltAppStore.xcarchive \
+            CODE_SIGNING_ALLOWED=NO
+          xcodebuild -exportArchive \
+            -archivePath $PWD/build/AltAppStore.xcarchive \
+            -exportOptionsPlist ExportOptions.plist \
+            -exportPath $PWD/build
+
+      - name: Upload IPA to Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: build/AltAppStore.ipa
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

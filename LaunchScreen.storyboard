@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+    <scenes>
+        <scene sceneID="LaunchScreen">
+            <objects>
+                <view key="view" contentMode="scaleToFill" id="view">
+                    <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
+                    <color key="backgroundColor" red="0.40" green="0.0" blue="1.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" image="AppIcon" translatesAutoresizingMaskIntoConstraints="NO" id="icon"/>
+                    <constraints>
+                        <constraint firstItem="icon" firstAttribute="centerX" secondItem="view" secondAttribute="centerX" id="centerX"/>
+                        <constraint firstItem="icon" firstAttribute="centerY" secondItem="view" secondAttribute="centerY" id="centerY"/>
+                        <constraint firstItem="icon" firstAttribute="width" secondItem="view" secondAttribute="width" multiplier="0.4" id="width"/>
+                    </constraints>
+                </view>
+            </objects>
+        </scene>
+    </scenes>
+</document>
