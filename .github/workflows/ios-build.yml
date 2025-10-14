@@ -1,4 +1,4 @@
- name: Build AltAppStore IPA
+name: Build AltAppStore IPA
 
 on:
   push:
