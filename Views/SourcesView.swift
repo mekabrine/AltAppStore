@@ -17,10 +17,12 @@ struct SourcesView: View {
             }
             .navigationTitle("Sources")
             .toolbar {
-                Button {
-                    showingAdd = true
-                } label: {
-                    Image(systemName: "plus")
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        showingAdd = true
+                    } label: {
+                        Image(systemName: "plus")
+                    }
                 }
             }
             .alert("Add Source", isPresented: $showingAdd) {
