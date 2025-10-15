@@ -13,24 +13,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Xcode project
+      - name: Set up minimal Xcode project
         run: |
-          mkdir -p AltAppStore
+          mkdir -p AltAppStore/AltAppStore
           cd AltAppStore
 
+          # Create the project structure
+          mkdir -p AltAppStore.xcodeproj
           cat > AltAppStore.xcodeproj/project.pbxproj <<'EOF'
           // !$*UTF8*$!
           {
             archiveVersion = 1;
             classes = {};
             objectVersion = 50;
-            objects = {
-            };
+            objects = {};
             rootObject = 1;
           }
           EOF
 
-          mkdir -p AltAppStore
+          # Create SwiftUI app files
           cat > AltAppStore/ContentView.swift <<'EOF'
           import SwiftUI
 
@@ -59,6 +60,7 @@ jobs:
           }
           EOF
 
+          # Info.plist
           cat > Info.plist <<'EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
