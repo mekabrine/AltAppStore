@@ -10,144 +10,36 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      # --------------------------
-      # 1️⃣ Checkout repository
-      # --------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # --------------------------
-      # 2️⃣ Install XcodeGen (for dynamic project generation)
-      # --------------------------
-      - name: Install XcodeGen
-        run: brew install xcodegen
-
-      # --------------------------
-      # 3️⃣ Create SwiftUI app files and XcodeGen project
-      # --------------------------
-      - name: Generate project and files
+      - name: Clean old build artifacts
         run: |
-          mkdir -p AltAppStore/Sources
-          cd AltAppStore
+          rm -rf build DerivedData
+          mkdir -p build
 
-          echo "🧱 Creating SwiftUI app files..."
-          cat > Sources/ContentView.swift <<'EOF'
-          import SwiftUI
-
-          struct ContentView: View {
-              var body: some View {
-                  VStack {
-                      Image(systemName: "sparkles")
-                          .font(.system(size: 60))
-                          .foregroundColor(.blue)
-                      Text("AltAppStore")
-                          .font(.largeTitle)
-                          .padding(.top, 8)
-                      Text("Custom iOS App Browser")
-                          .foregroundColor(.gray)
-                          .font(.subheadline)
-                  }
-                  .padding()
-              }
-          }
-          EOF
-
-          cat > Sources/AltAppStoreApp.swift <<'EOF'
-          import SwiftUI
-
-          @main
-          struct AltAppStoreApp: App {
-              var body: some Scene {
-                  WindowGroup {
-                      ContentView()
-                  }
-              }
-          }
-          EOF
-
-          echo "🧩 Creating Info.plist..."
-          cat > Info.plist <<'EOF'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>CFBundleIdentifier</key>
-            <string>space.mekabrine.AltAppStore</string>
-            <key>CFBundleName</key>
-            <string>AltAppStore</string>
-            <key>CFBundleExecutable</key>
-            <string>AltAppStore</string>
-            <key>CFBundlePackageType</key>
-            <string>APPL</string>
-            <key>CFBundleShortVersionString</key>
-            <string>1.0</string>
-            <key>CFBundleVersion</key>
-            <string>1</string>
-            <key>UILaunchStoryboardName</key>
-            <string>LaunchScreen</string>
-            <key>MinimumOSVersion</key>
-            <string>15.0</string>
-            <key>UIApplicationSceneManifest</key>
-            <dict>
-              <key>UIApplicationSupportsMultipleScenes</key>
-              <false/>
-            </dict>
-          </dict>
-          </plist>
-          EOF
-
-          echo "🛠 Creating XcodeGen project.yml..."
-          cat > project.yml <<'EOF'
-          name: AltAppStore
-          options:
-            bundleIdPrefix: space.mekabrine
-            deploymentTarget:
-              iOS: "15.0"
-          targets:
-            AltAppStore:
-              type: application
-              platform: iOS
-              sources:
-                - path: Sources
-              info:
-                path: Info.plist
-              settings:
-                base:
-                  PRODUCT_BUNDLE_IDENTIFIER: space.mekabrine.AltAppStore
-                  CODE_SIGN_IDENTITY: ""
-                  CODE_SIGNING_REQUIRED: NO
-                  CODE_SIGNING_ALLOWED: NO
-          EOF
-
-          echo "⚙️ Generating .xcodeproj with XcodeGen..."
-          xcodegen generate
-
-      # --------------------------
-      # 4️⃣ Build the iOS app (Release, unsigned)
-      # --------------------------
-      - name: Build AltAppStore using xcodebuild
+      - name: Build unsigned IPA
         run: |
-          cd AltAppStore
-          echo "🏗 Building AltAppStore for iOS..."
-          xcodebuild -scheme AltAppStore \
+          xcodebuild -project AltAppStore.xcodeproj \
+            -scheme AltAppStore \
             -sdk iphoneos \
             -configuration Release \
             -derivedDataPath build \
-            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY= \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
             clean build
 
-          echo "📦 Packaging IPA..."
-          mkdir -p build/Payload
-          APP_PATH=$(find build/Build/Products/Release-iphoneos -name "*.app" | head -n 1)
-          cp -r "$APP_PATH" build/Payload/AltAppStore.app
-          cd build
-          zip -r AltAppStore.ipa Payload
+      - name: Package IPA
+        run: |
+          mkdir -p Payload
+          cp -r build/Build/Products/Release-iphoneos/AltAppStore.app Payload/
+          zip -r AltAppStore-unsigned.ipa Payload
+          mv AltAppStore-unsigned.ipa build/
+          rm -rf Payload
 
-      # --------------------------
-      # 5️⃣ Upload unsigned IPA
-      # --------------------------
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
           name: AltAppStore-unsigned
-          path: AltAppStore/build/AltAppStore.ipa
+          path: build/AltAppStore-unsigned.ipa
