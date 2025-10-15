@@ -1,11 +1,17 @@
 import SwiftUI
 
 struct ContentView: View {
+    init() {
+        UITabBar.appearance().backgroundColor = UIColor.black
+        UITabBar.appearance().unselectedItemTintColor = UIColor.gray
+        UITabBar.appearance().tintColor = UIColor.systemPurple
+    }
+
     var body: some View {
         TabView {
             CoolShitView()
                 .tabItem {
-                    Label("Cool Sh*t", systemImage: "sparkles")
+                    Label("Cool Sh*t", systemImage: "star.fill")
                 }
 
             SearchView()
@@ -15,8 +21,9 @@ struct ContentView: View {
 
             SourcesView()
                 .tabItem {
-                    Label("Sources", systemImage: "tray.full")
+                    Label("Sources", systemImage: "list.bullet.rectangle.portrait")
                 }
         }
+        .accentColor(.purple)
     }
 }

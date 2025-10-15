@@ -8,6 +8,7 @@ struct AltAppStoreApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(manager)
+                .preferredColorScheme(.dark)
         }
     }
 }

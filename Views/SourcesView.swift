@@ -2,41 +2,39 @@ import SwiftUI
 
 struct SourcesView: View {
     @EnvironmentObject var manager: SourceManager
+    @State private var showingAddSheet = false
 
     var body: some View {
         NavigationStack {
             List {
-                ForEach(manager.sources) { source in
-                    Section(header: Text(source.name)) {
-                        ForEach(source.apps) { app in
-                            NavigationLink(destination: SourceDetailView(app: app)) {
-                                HStack {
-                                    AsyncImage(url: app.iconURL) { image in
-                                        image.resizable()
-                                    } placeholder: {
-                                        Color.gray
-                                    }
-                                    .frame(width: 40, height: 40)
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
-
-                                    VStack(alignment: .leading) {
-                                        Text(app.name)
-                                            .font(.headline)
-                                        if let dev = app.developerName {
-                                            Text(dev)
-                                                .font(.subheadline)
-                                                .foregroundColor(.secondary)
-                                        }
-                                    }
-                                }
-                            }
+                Section(header: Text("Repositories")) {
+                    ForEach(manager.sources) { repo in
+                        VStack(alignment: .leading) {
+                            Text(repo.name)
+                                .font(.headline)
+                            Text(repo.url)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
                         }
+                        .padding(.vertical, 4)
                     }
                 }
             }
             .navigationTitle("Sources")
-            .onAppear {
-                manager.fetchSources()
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showingAddSheet.toggle()
+                    } label: {
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundStyle(.purple)
+                    }
+                }
+            }
+            .sheet(isPresented: $showingAddSheet) {
+                AddSourceView()
+                    .environmentObject(manager)
+                    .presentationDetents([.fraction(0.35)])
             }
         }
     }
