@@ -10,53 +10,56 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Swift project
+      - name: Set up Xcode project
         run: |
-          mkdir -p AltAppStore/Sources
-          if [ ! -f AltAppStore/Sources/main.swift ]; then
-            echo 'import SwiftUI
-            @main
-            struct AltAppStoreApp: App {
-                var body: some Scene {
-                    WindowGroup {
-                        Text("AltAppStore")
-                    }
-                }
-            }' > AltAppStore/Sources/main.swift
-          fi
+          mkdir -p AltAppStore
+          cd AltAppStore
 
-          cat > AltAppStore/Package.swift <<EOF
-          // swift-tools-version: 5.10
-          import PackageDescription
-
-          let package = Package(
-              name: "AltAppStore",
-              platforms: [.iOS(.v16)],
-              products: [
-                  .executable(name: "AltAppStore", targets: ["AltAppStore"])
-              ],
-              targets: [
-                  .executableTarget(
-                      name: "AltAppStore",
-                      path: "Sources"
-                  )
-              ]
-          )
+          cat > AltAppStore.xcodeproj/project.pbxproj <<'EOF'
+          // !$*UTF8*$!
+          {
+            archiveVersion = 1;
+            classes = {};
+            objectVersion = 50;
+            objects = {
+            };
+            rootObject = 1;
+          }
           EOF
 
-      - name: Build AltAppStore .app for iOS
-        run: |
-          cd AltAppStore
-          swift build -c release --triple arm64-apple-ios16.0
+          mkdir -p AltAppStore
+          cat > AltAppStore/ContentView.swift <<'EOF'
+          import SwiftUI
 
-          mkdir -p ../build/Payload/AltAppStore.app
-          cp .build/arm64-apple-ios16.0/release/AltAppStore ../build/Payload/AltAppStore.app/
+          struct ContentView: View {
+              var body: some View {
+                  Text("AltAppStore")
+                      .padding()
+              }
+          }
 
-          # Create minimal Info.plist
-          cat > ../build/Payload/AltAppStore.app/Info.plist <<EOF
+          #Preview {
+              ContentView()
+          }
+          EOF
+
+          cat > AltAppStore/AltAppStoreApp.swift <<'EOF'
+          import SwiftUI
+
+          @main
+          struct AltAppStoreApp: App {
+              var body: some Scene {
+                  WindowGroup {
+                      ContentView()
+                  }
+              }
+          }
+          EOF
+
+          cat > Info.plist <<'EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
           <plist version="1.0">
@@ -73,18 +76,35 @@ jobs:
             <string>1.0</string>
             <key>CFBundleShortVersionString</key>
             <string>1.0</string>
+            <key>UILaunchStoryboardName</key>
+            <string>LaunchScreen</string>
             <key>MinimumOSVersion</key>
             <string>15.0</string>
           </dict>
           </plist>
           EOF
 
-          # Package into a proper .ipa
-          cd ../build
+          mkdir -p LaunchScreen.storyboardc
+          echo "" > LaunchScreen.storyboardc/dummy.txt
+
+      - name: Build with xcodebuild
+        run: |
+          xcodebuild -project AltAppStore/AltAppStore.xcodeproj \
+            -scheme AltAppStore \
+            -sdk iphoneos \
+            -configuration Release \
+            -derivedDataPath build \
+            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO \
+            clean build
+
+          mkdir -p build/Payload
+          APP_PATH=$(find build/Build/Products/Release-iphoneos -name "*.app" | head -n 1)
+          cp -r "$APP_PATH" build/Payload/
+
+          cd build
           zip -r AltAppStore.ipa Payload
 
-      - name: Upload unsigned IPA artifact
-        if: success()
+      - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
           name: AltAppStore-unsigned
