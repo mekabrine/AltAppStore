@@ -15,79 +15,80 @@ jobs:
 
       - name: Create minimal Xcode project
         run: |
-          mkdir -p AltAppStore
-          cat > AltAppStore/project.pbxproj <<'EOF'
-          // !$*UTF8*$!
-          {
-            archiveVersion = 1;
-            classes = {};
-            objectVersion = 55;
-            objects = {
-              1 = {
-                isa = PBXProject;
-                attributes = { LastUpgradeCheck = 1430; };
-                buildConfigurationList = 2;
-                compatibilityVersion = "Xcode 14.0";
-                developmentRegion = en;
-                hasScannedForEncodings = 0;
-                knownRegions = ( en, Base );
-                mainGroup = 3;
-                name = AltAppStore;
-                productRefGroup = 4;
-                projectDirPath = "";
-                projectRoot = "";
-                targets = (5);
-              };
-              2 = {
-                isa = XCConfigurationList;
-                buildConfigurations = (6,7);
-                defaultConfigurationIsVisible = 0;
-                defaultConfigurationName = Release;
-              };
-              3 = { isa = PBXGroup; children = (4); sourceTree = "<group>"; };
-              4 = { isa = PBXGroup; children = (); name = Products; sourceTree = "<group>"; };
-              5 = {
-                isa = PBXNativeTarget;
-                buildConfigurationList = 2;
-                buildPhases = ();
-                buildRules = ();
-                dependencies = ();
-                name = AltAppStore;
-                productName = AltAppStore;
-                productType = "com.apple.product-type.application";
-              };
-              6 = {
-                isa = XCBuildConfiguration;
-                buildSettings = {
-                  INFOPLIST_FILE = AltAppStore/Info.plist;
-                  PRODUCT_BUNDLE_IDENTIFIER = com.yourname.AltAppStore;
-                  IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-                  SWIFT_VERSION = 5.0;
-                  CODE_SIGN_IDENTITY = "";
-                  CODE_SIGNING_REQUIRED = NO;
-                  CODE_SIGNING_ALLOWED = NO;
-                };
-                name = Debug;
-              };
-              7 = {
-                isa = XCBuildConfiguration;
-                buildSettings = {
-                  INFOPLIST_FILE = AltAppStore/Info.plist;
-                  PRODUCT_BUNDLE_IDENTIFIER = com.yourname.AltAppStore;
-                  IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-                  SWIFT_VERSION = 5.0;
-                  CODE_SIGN_IDENTITY = "";
-                  CODE_SIGNING_REQUIRED = NO;
-                  CODE_SIGNING_ALLOWED = NO;
-                };
-                name = Release;
-              };
-            };
-            rootObject = 1;
-          }
-          EOF
+          cat > project.pbxproj <<'EOF'
+// !$*UTF8*$!
+{
+  archiveVersion = 1;
+  classes = {};
+  objectVersion = 55;
+  objects = {
+    1 = {
+      isa = PBXProject;
+      attributes = { LastUpgradeCheck = 1430; };
+      buildConfigurationList = 2;
+      compatibilityVersion = "Xcode 14.0";
+      developmentRegion = en;
+      hasScannedForEncodings = 0;
+      knownRegions = ( en, Base );
+      mainGroup = 3;
+      name = AltAppStore;
+      productRefGroup = 4;
+      projectDirPath = "";
+      projectRoot = "";
+      targets = (5);
+    };
+    2 = {
+      isa = XCConfigurationList;
+      buildConfigurations = (6,7);
+      defaultConfigurationIsVisible = 0;
+      defaultConfigurationName = Release;
+    };
+    3 = { isa = PBXGroup; children = (4); sourceTree = "<group>"; };
+    4 = { isa = PBXGroup; children = (); name = Products; sourceTree = "<group>"; };
+    5 = {
+      isa = PBXNativeTarget;
+      buildConfigurationList = 2;
+      buildPhases = ();
+      buildRules = ();
+      dependencies = ();
+      name = AltAppStore;
+      productName = AltAppStore;
+      productType = "com.apple.product-type.application";
+    };
+    6 = {
+      isa = XCBuildConfiguration;
+      buildSettings = {
+        INFOPLIST_FILE = Info.plist;
+        PRODUCT_BUNDLE_IDENTIFIER = space.mekabrine.AltAppStore;
+        IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+        SWIFT_VERSION = 5.0;
+        TARGETED_DEVICE_FAMILY = "1,2";
+        CODE_SIGN_IDENTITY = "";
+        CODE_SIGNING_REQUIRED = NO;
+        CODE_SIGNING_ALLOWED = NO;
+      };
+      name = Debug;
+    };
+    7 = {
+      isa = XCBuildConfiguration;
+      buildSettings = {
+        INFOPLIST_FILE = Info.plist;
+        PRODUCT_BUNDLE_IDENTIFIER = space.mekabrine.AltAppStore;
+        IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+        SWIFT_VERSION = 5.0;
+        TARGETED_DEVICE_FAMILY = "1,2";
+        CODE_SIGN_IDENTITY = "";
+        CODE_SIGNING_REQUIRED = NO;
+        CODE_SIGNING_ALLOWED = NO;
+      };
+      name = Release;
+    };
+  };
+  rootObject = 1;
+}
+EOF
           mkdir -p AltAppStore.xcodeproj
-          mv AltAppStore/project.pbxproj AltAppStore.xcodeproj/project.pbxproj
+          mv project.pbxproj AltAppStore.xcodeproj/project.pbxproj
 
       - name: Clean old build artifacts
         run: |
@@ -97,7 +98,7 @@ jobs:
       - name: Build unsigned IPA
         run: |
           xcodebuild -project AltAppStore.xcodeproj \
-            -scheme AltAppStore \
+            -target AltAppStore \
             -sdk iphoneos \
             -configuration Release \
             -derivedDataPath build \
