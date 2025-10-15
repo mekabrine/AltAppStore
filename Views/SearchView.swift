@@ -5,21 +5,19 @@ struct SearchView: View {
     @State private var query = ""
 
     var filteredApps: [SidestoreApp] {
-        if query.isEmpty { return manager.allApps }
-        return manager.allApps.filter { $0.name.localizedCaseInsensitiveContains(query) }
+        if query.isEmpty { return [] }
+        return manager.sources.flatMap { $0.apps }
+            .filter { $0.name.localizedCaseInsensitiveContains(query) }
     }
 
     var body: some View {
         NavigationStack {
             List(filteredApps) { app in
-                VStack(alignment: .leading) {
-                    Text(app.name).font(.headline)
-                    if let dev = app.developerName {
-                        Text(dev).font(.subheadline).foregroundColor(.secondary)
-                    }
+                NavigationLink(destination: SourceDetailView(app: app)) {
+                    Text(app.name)
                 }
             }
-            .searchable(text: $query)
+            .searchable(text: $query, prompt: "Search apps")
             .navigationTitle("Search")
         }
     }

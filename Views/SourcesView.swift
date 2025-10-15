@@ -2,36 +2,41 @@ import SwiftUI
 
 struct SourcesView: View {
     @EnvironmentObject var manager: SourceManager
-    @State private var showingAdd = false
-    @State private var newSource = ""
 
     var body: some View {
         NavigationStack {
             List {
-                ForEach(manager.sources, id: \.self) { source in
-                    NavigationLink(destination: SourceDetailView(source: source)) {
-                        Text(source.absoluteString)
-                            .lineLimit(1)
+                ForEach(manager.sources) { source in
+                    Section(header: Text(source.name)) {
+                        ForEach(source.apps) { app in
+                            NavigationLink(destination: SourceDetailView(app: app)) {
+                                HStack {
+                                    AsyncImage(url: app.iconURL) { image in
+                                        image.resizable()
+                                    } placeholder: {
+                                        Color.gray
+                                    }
+                                    .frame(width: 40, height: 40)
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                                    VStack(alignment: .leading) {
+                                        Text(app.name)
+                                            .font(.headline)
+                                        if let dev = app.developerName {
+                                            Text(dev)
+                                                .font(.subheadline)
+                                                .foregroundColor(.secondary)
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
             .navigationTitle("Sources")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        showingAdd = true
-                    } label: {
-                        Image(systemName: "plus")
-                    }
-                }
-            }
-            .alert("Add Source", isPresented: $showingAdd) {
-                TextField("https://example.com/source.json", text: $newSource)
-                Button("Add") {
-                    manager.addSource(newSource)
-                    newSource = ""
-                }
-                Button("Cancel", role: .cancel) {}
+            .onAppear {
+                manager.fetchSources()
             }
         }
     }
