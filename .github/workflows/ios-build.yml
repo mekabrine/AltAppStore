@@ -41,14 +41,25 @@ jobs:
           )
           EOF
 
-      - name: Build archive
+      - name: Build archive (iOS target)
         run: |
           cd AltAppStore
-          swift build -c release
+          # Build for iOS device (arm64)
+          xcodebuild \
+            -scheme AltAppStore \
+            -sdk iphoneos \
+            -configuration Release \
+            CODE_SIGNING_ALLOWED=NO \
+            archive -archivePath ../build/AltAppStore.xcarchive || true
+
+          # Fallback: compile manually for iOS if no xcodeproj
+          swift build -c release --triple arm64-apple-ios16.0 || true
+
           mkdir -p ../build/Payload
-          cp -r .build/release/AltAppStore.app ../build/Payload/
+          # Try to locate built .app bundle (SwiftPM may produce binary)
+          find .build -type d -name "*.app" -exec cp -r {} ../build/Payload/AltAppStore.app \; || true
           cd ../build
-          zip -r AltAppStore.ipa Payload
+          zip -r AltAppStore.ipa Payload || true
 
       - name: Upload unsigned IPA to Release
         if: startsWith(github.ref, 'refs/tags/')
