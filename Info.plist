@@ -2,30 +2,20 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-
-    <!-- App identity -->
     <key>CFBundleDisplayName</key>
     <string>AltAppStore</string>
-
     <key>CFBundleIdentifier</key>
-    <string>space.mekabrine.AltAppStore</string>
-
+    <string>com.yourname.AltAppStore</string>
     <key>CFBundleName</key>
     <string>AltAppStore</string>
-
     <key>CFBundleShortVersionString</key>
     <string>1.0</string>
-
     <key>CFBundleVersion</key>
     <string>1</string>
-
     <key>CFBundlePackageType</key>
     <string>APPL</string>
-
     <key>CFBundleExecutable</key>
     <string>$(EXECUTABLE_NAME)</string>
-
-    <!-- App icon and launch screen -->
     <key>CFBundleIcons</key>
     <dict>
         <key>CFBundlePrimaryIcon</key>
@@ -38,15 +28,10 @@
             <false/>
         </dict>
     </dict>
-
     <key>UILaunchStoryboardName</key>
     <string>LaunchScreen</string>
-
-    <!-- Interface style -->
     <key>UIUserInterfaceStyle</key>
     <string>Dark</string>
-
-    <!-- Orientation -->
     <key>UISupportedInterfaceOrientations</key>
     <array>
         <string>UIInterfaceOrientationPortrait</string>
@@ -54,8 +39,6 @@
         <string>UIInterfaceOrientationLandscapeLeft</string>
         <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
-
-    <!-- Scene configuration for SwiftUI -->
     <key>UIApplicationSceneManifest</key>
     <dict>
         <key>UIApplicationSupportsMultipleScenes</key>
@@ -73,17 +56,10 @@
             </array>
         </dict>
     </dict>
-
-    <!-- Permissions / capabilities -->
     <key>NSAppTransportSecurity</key>
     <dict>
         <key>NSAllowsArbitraryLoads</key>
         <true/>
     </dict>
-
-    <!-- Main storyboard (not used in SwiftUI, but required for legacy compatibility) -->
-    <key>NSMainStoryboardFile</key>
-    <string></string>
-
 </dict>
 </plist>
